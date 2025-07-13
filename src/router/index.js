@@ -33,6 +33,12 @@ const routes = [
         name: 'User',
         component: () => import('@/views/User.vue'),
         meta: { title: '用户管理', icon: 'User' }
+      },
+      {
+        path: '/charts',
+        name: 'Charts',
+        component: () => import('@/views/Charts.vue'),
+        meta: { title: '图表展示', icon: 'TrendCharts' }
       }
     ]
   },
