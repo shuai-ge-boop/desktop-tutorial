@@ -32,13 +32,12 @@
                     <template #header>
                         <h3>用户增长趋势</h3>
                     </template>
-                    <div class="chart-placeholder">
-                        <el-icon :size="48" color="#e0e0e0">
-                            <TrendCharts />
-                        </el-icon>
-                        <p>图表组件占位符</p>
-                        <p>可以集成 ECharts 或其他图表库</p>
-                    </div>
+                    <EChartsComponent 
+                        :option="userGrowthOption" 
+                        height="200px"
+                        @chartReady="handleChartReady"
+                        @chartClick="handleChartClick"
+                    />
                 </el-card>
             </el-col>
 
@@ -96,6 +95,7 @@ import {
     Download,
     Upload
 } from '@element-plus/icons-vue'
+import EChartsComponent from '@/components/EChartsComponent.vue'
 
 // 统计数据
 const stats = ref([
@@ -158,6 +158,56 @@ const quickActions = ref([
     }
 ])
 
+// 用户增长趋势图表配置
+const userGrowthOption = ref({
+    title: {
+        text: '用户增长趋势',
+        left: 'center',
+        textStyle: {
+            fontSize: 14,
+            color: '#303133'
+        }
+    },
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross'
+        }
+    },
+    legend: {
+        data: ['新增用户', '活跃用户'],
+        bottom: 10
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '15%',
+        containLabel: true
+    },
+    xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+        {
+            name: '新增用户',
+            type: 'line',
+            stack: 'Total',
+            data: [120, 132, 101, 134, 90, 230, 210, 182, 191, 234, 290, 330]
+        },
+        {
+            name: '活跃用户',
+            type: 'line',
+            stack: 'Total',
+            data: [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149]
+        }
+    ]
+})
+
 // 获取进度条颜色
 const getProgressColor = (percentage) => {
     if (percentage < 50) return '#67c23a'
@@ -192,6 +242,16 @@ const refreshData = () => {
     diskUsage.value = Math.floor(Math.random() * 100)
 }
 
+// 图表就绪事件
+const handleChartReady = (chartInstance) => {
+    console.log('图表已就绪', chartInstance)
+}
+
+// 图表点击事件
+const handleChartClick = (params) => {
+    ElMessage.info(`点击了 ${params.seriesName}: ${params.value}`)
+}
+
 // 组件挂载时模拟数据加载
 onMounted(() => {
     refreshData()
@@ -199,6 +259,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/variables.scss' as *;
+
 .dashboard-container {
     .page-header {
         margin-bottom: 30px;

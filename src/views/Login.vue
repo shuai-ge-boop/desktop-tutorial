@@ -96,10 +96,12 @@ const handleLogin = async () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/variables.scss' as *;
+
 .login-tips {
-    text-align: center;
-    margin-top: 20px;
-    color: $text-color-secondary;
-    font-size: 12px;
+  text-align: center;
+  margin-top: 20px;
+  color: $text-color-secondary;
+  font-size: 12px;
 }
 </style>

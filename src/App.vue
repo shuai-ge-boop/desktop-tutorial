@@ -1,12 +1,26 @@
 <template>
 	<div id="app">
 		<router-view />
+		<StagewiseToolbar :enabled="isDev" :config="stagewiseConfig" />
 	</div>
 </template>
 
 <script>
+import { StagewiseToolbar } from '@stagewise/toolbar-vue'
+
 export default {
-	name: 'App'
+	name: 'App',
+	components: {
+		StagewiseToolbar
+	},
+	data() {
+		return {
+			isDev: import.meta.env.DEV,
+			stagewiseConfig: {
+				plugins: []
+			}
+		}
+	}
 }
 </script>
 

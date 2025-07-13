@@ -297,6 +297,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/variables.scss' as *;
+
 .system-container {
     .page-header {
         margin-bottom: 20px;

@@ -288,6 +288,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/variables.scss' as *;
+
 .user-container {
     .page-header {
         margin-bottom: 20px;

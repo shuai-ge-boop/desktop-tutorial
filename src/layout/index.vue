@@ -144,6 +144,8 @@ const handleLogout = async () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/variables.scss' as *;
+
 .layout-container {
     height: 100vh;
 
