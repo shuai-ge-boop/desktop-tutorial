@@ -131,31 +131,7 @@
             </div>
         </el-card>
 
-        <!-- 统计图表 -->
-        <el-row :gutter="20" class="charts-row">
-            <el-col :span="12">
-                <el-card class="chart-card" shadow="hover">
-                    <template #header>
-                        <span>👥 用户角色分布</span>
-                    </template>
-                    <EChartsComponent
-                        :option="roleChartOption"
-                        height="300px"
-                    />
-                </el-card>
-            </el-col>
-            <el-col :span="12">
-                <el-card class="chart-card" shadow="hover">
-                    <template #header>
-                        <span>📊 用户状态统计</span>
-                    </template>
-                    <EChartsComponent
-                        :option="statusChartOption"
-                        height="300px"
-                    />
-                </el-card>
-            </el-col>
-        </el-row>
+
 
         <!-- 用户表单对话框 -->
         <UserForm
@@ -207,7 +183,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
     Plus,
@@ -222,7 +199,7 @@ import {
 } from '@element-plus/icons-vue'
 import UserForm from '@/components/UserForm.vue'
 import UserImport from '@/components/UserImport.vue'
-import EChartsComponent from '@/components/EChartsComponent.vue'
+import { useUserDataStore } from '@/stores/userData'
 import {
     exportToExcel,
     exportToCSV,
@@ -252,158 +229,14 @@ const userDetailVisible = ref(false)
 const currentUser = ref(null)
 const isEditMode = ref(false)
 
-// 模拟用户数据
-const mockUsers = ref([
-    {
-        id: 1,
-        username: 'admin',
-        name: '管理员',
-        email: 'admin@example.com',
-        phone: '13800138001',
-        avatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-        role: 'admin',
-        status: 'active',
-        department: 'tech',
-        remark: '系统管理员',
-        createTime: '2023-01-01 10:00:00'
-    },
-    {
-        id: 2,
-        username: 'user1',
-        name: '张三',
-        email: 'zhangsan@example.com',
-        phone: '13800138002',
-        avatar: 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png',
-        role: 'user',
-        status: 'active',
-        department: 'product',
-        remark: '产品经理',
-        createTime: '2023-01-02 14:30:00'
-    },
-    {
-        id: 3,
-        username: 'user2',
-        name: '李四',
-        email: 'lisi@example.com',
-        phone: '13800138003',
-        avatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-        role: 'user',
-        status: 'disabled',
-        department: 'operation',
-        remark: '运营专员',
-        createTime: '2023-01-03 09:15:00'
-    },
-    {
-        id: 4,
-        username: 'moderator',
-        name: '王五',
-        email: 'wangwu@example.com',
-        phone: '13800138004',
-        avatar: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48png.png',
-        role: 'moderator',
-        status: 'active',
-        department: 'marketing',
-        remark: '市场版主',
-        createTime: '2023-01-04 16:45:00'
-    },
-    {
-        id: 5,
-        username: 'user3',
-        name: '赵六',
-        email: 'zhaoliu@example.com',
-        phone: '13800138005',
-        avatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-        role: 'user',
-        status: 'active',
-        department: 'hr',
-        remark: '人事专员',
-        createTime: '2023-01-05 11:20:00'
-    }
-])
+// 使用共享的用户数据状态管理
+const userDataStore = useUserDataStore()
+// 使用storeToRefs保持响应性
+const { users: mockUsers } = storeToRefs(userDataStore)
+// 方法可以直接解构
+const { addUser, updateUser, deleteUser, deleteUsers } = userDataStore
 
-// 图表配置
-const roleChartOption = computed(() => {
-    const roleStats = mockUsers.value.reduce((acc, user) => {
-        acc[user.role] = (acc[user.role] || 0) + 1
-        return acc
-    }, {})
 
-    return {
-        title: {
-            text: '用户角色分布',
-            left: 'center',
-            textStyle: { fontSize: 14 }
-        },
-        tooltip: {
-            trigger: 'item',
-            formatter: '{a} <br/>{b}: {c} ({d}%)'
-        },
-        series: [
-            {
-                name: '角色分布',
-                type: 'pie',
-                radius: '60%',
-                center: ['50%', '60%'],
-                data: [
-                    { value: roleStats.admin || 0, name: '管理员' },
-                    { value: roleStats.moderator || 0, name: '版主' },
-                    { value: roleStats.user || 0, name: '普通用户' }
-                ],
-                emphasis: {
-                    itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0, 0, 0, 0.5)'
-                    }
-                }
-            }
-        ]
-    }
-})
-
-const statusChartOption = computed(() => {
-    const statusStats = mockUsers.value.reduce((acc, user) => {
-        acc[user.status] = (acc[user.status] || 0) + 1
-        return acc
-    }, {})
-
-    return {
-        title: {
-            text: '用户状态统计',
-            left: 'center',
-            textStyle: { fontSize: 14 }
-        },
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-                type: 'shadow'
-            }
-        },
-        xAxis: {
-            type: 'category',
-            data: ['正常', '禁用']
-        },
-        yAxis: {
-            type: 'value'
-        },
-        series: [
-            {
-                name: '用户数量',
-                type: 'bar',
-                data: [
-                    statusStats.active || 0,
-                    statusStats.disabled || 0
-                ],
-                itemStyle: {
-                    color: function(params) {
-                        const colors = ['#67c23a', '#f56c6c']
-                        return colors[params.dataIndex]
-                    }
-                }
-            }
-        ]
-    }
-})
 
 // 获取用户列表
 const fetchUsers = async () => {
@@ -412,6 +245,13 @@ const fetchUsers = async () => {
     try {
         // 模拟API请求
         await new Promise(resolve => setTimeout(resolve, 500))
+
+        // 确保用户数据存在
+        if (!mockUsers.value || !Array.isArray(mockUsers.value)) {
+            console.error('用户数据未正确初始化:', mockUsers.value)
+            ElMessage.error('用户数据加载失败')
+            return
+        }
 
         // 模拟搜索和筛选
         let filteredData = mockUsers.value
@@ -506,10 +346,11 @@ const handleStatusChange = async (row) => {
         // 模拟API请求
         await new Promise(resolve => setTimeout(resolve, 300))
 
-        // 更新本地数据
+        // 使用共享状态管理更新用户状态
         const userIndex = mockUsers.value.findIndex(user => user.id === row.id)
         if (userIndex !== -1) {
-            mockUsers.value[userIndex].status = row.status
+            const updatedUser = { ...mockUsers.value[userIndex], status: row.status }
+            updateUser(updatedUser)
         }
 
         ElMessage.success(`用户状态已${row.status === 'active' ? '启用' : '禁用'}`)
@@ -536,11 +377,8 @@ const handleDelete = async (row) => {
         // 模拟API请求
         await new Promise(resolve => setTimeout(resolve, 300))
 
-        // 从本地数据中删除
-        const userIndex = mockUsers.value.findIndex(user => user.id === row.id)
-        if (userIndex !== -1) {
-            mockUsers.value.splice(userIndex, 1)
-        }
+        // 使用共享状态管理删除用户
+        deleteUser(row.id)
 
         ElMessage.success('删除成功')
         fetchUsers()
@@ -570,9 +408,9 @@ const handleBatchDelete = async () => {
         // 模拟API请求
         await new Promise(resolve => setTimeout(resolve, 500))
 
-        // 从本地数据中删除选中的用户
+        // 使用共享状态管理批量删除用户
         const selectedIds = selectedRows.value.map(row => row.id)
-        mockUsers.value = mockUsers.value.filter(user => !selectedIds.includes(user.id))
+        deleteUsers(selectedIds)
 
         ElMessage.success(`成功删除 ${selectedRows.value.length} 个用户`)
         selectedRows.value = []
@@ -671,19 +509,12 @@ const handleExport = async (format) => {
 // 用户表单成功处理
 const handleUserFormSuccess = (userData) => {
     if (isEditMode.value) {
-        // 编辑模式：更新现有用户
-        const userIndex = mockUsers.value.findIndex(user => user.id === userData.id)
-        if (userIndex !== -1) {
-            mockUsers.value[userIndex] = { ...userData }
-        }
+        // 编辑模式：使用共享状态管理更新用户
+        updateUser(userData)
         ElMessage.success('用户信息更新成功')
     } else {
-        // 新增模式：添加新用户
-        mockUsers.value.push({
-            ...userData,
-            id: Date.now(),
-            createTime: new Date().toLocaleString()
-        })
+        // 新增模式：使用共享状态管理添加用户
+        addUser(userData)
         ElMessage.success('用户创建成功')
     }
 
@@ -764,17 +595,7 @@ onMounted(() => {
         }
     }
 
-    .charts-row {
-        margin-top: 20px;
 
-        .chart-card {
-            height: 400px;
-
-            :deep(.el-card__body) {
-                height: calc(100% - 60px);
-            }
-        }
-    }
 
     .user-detail {
         .detail-header {
@@ -829,11 +650,7 @@ onMounted(() => {
             }
         }
 
-        .charts-row {
-            .el-col {
-                margin-bottom: 20px;
-            }
-        }
+
     }
 }
 </style>

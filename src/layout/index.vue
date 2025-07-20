@@ -28,6 +28,20 @@
                         </el-icon>
                         <template #title>系统管理</template>
                     </el-menu-item>
+
+                    <el-menu-item index="/user-role-distribution">
+                        <el-icon>
+                            <UserFilled />
+                        </el-icon>
+                        <template #title>用户角色分布</template>
+                    </el-menu-item>
+
+                    <el-menu-item index="/user-status-statistics">
+                        <el-icon>
+                            <DataAnalysis />
+                        </el-icon>
+                        <template #title>用户状态统计</template>
+                    </el-menu-item>
                 </el-menu>
             </el-aside>
 
@@ -101,7 +115,9 @@ import {
     User,
     Setting,
     ArrowDown,
-    SwitchButton
+    SwitchButton,
+    UserFilled,
+    DataAnalysis
 } from '@element-plus/icons-vue'
 
 const router = useRouter()

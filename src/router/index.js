@@ -39,6 +39,18 @@ const routes = [
         name: 'Charts',
         component: () => import('@/views/Charts.vue'),
         meta: { title: '图表展示', icon: 'TrendCharts' }
+      },
+      {
+        path: '/user-role-distribution',
+        name: 'UserRoleDistribution',
+        component: () => import('@/views/UserRoleDistribution.vue'),
+        meta: { title: '用户角色分布', icon: 'UserFilled' }
+      },
+      {
+        path: '/user-status-statistics',
+        name: 'UserStatusStatistics',
+        component: () => import('@/views/UserStatusStatistics.vue'),
+        meta: { title: '用户状态统计', icon: 'DataAnalysis' }
       }
     ]
   },
